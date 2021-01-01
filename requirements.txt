@@ -8,7 +8,7 @@ cffi==1.14.4
 channels==3.0.3
 channels-redis==3.2.0
 constantly==15.1.0
-cryptography==3.3.1
+cryptography==3.2.1
 daphne==3.0.1
 Django==3.1.4
 hiredis==1.1.0
@@ -22,6 +22,7 @@ pycparser==2.20
 PyHamcrest==2.0.2
 pyOpenSSL==20.0.1
 pytz==2020.5
+qaes==1.0.3
 selenium==3.141.0
 service-identity==18.1.0
 six==1.15.0
