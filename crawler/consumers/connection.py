@@ -1,25 +1,23 @@
 import json
-from uuid import uuid4
 
-from asgiref.sync import sync_to_async
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 
 from crawler.engine import run_engine
+from crawler.models import Crawl
 
 
-class ConnectionConsumer(AsyncWebsocketConsumer):
+class ConnectionConsumer(WebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tasks_status: dict[str, bool] = {}
-        self.crawl_id: str = ''
+        self.crawl = None
 
-    async def connect(self):
-        await self.accept()
-        self.crawl_id = uuid4().hex
+    def connect(self):
+        self.accept()
 
-    async def receive(self, text_data=None, bytes_data=None):
+    def receive(self, text_data=None, bytes_data=None):
         data: dict = json.loads(text_data)
         if 'initial_links' in data:
+            self.crawl = Crawl.objects.create()
             run_engine(data, self)
-            # await sync_to_async(run_engine)(data, self)
