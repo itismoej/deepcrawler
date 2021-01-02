@@ -14,7 +14,7 @@ options.page_load_strategy = 'normal'
 options.headless = True
 
 
-def scraper(depth: int, url: str, consumer, mem_site):
+def scraper(depth: int, url: str, consumer, mem_site: MemorySite):
     browser = webdriver.Chrome(
         executable_path=settings.BASE_DIR / 'chromedriver',
         chrome_options=options,
@@ -61,8 +61,8 @@ def scrape_url(browser, consumer, root: MemorySite, depth, current_depth, url, d
                         link.child_url, children_directory, child_site
                     )
 
-        except WebDriverException:
-            pass
+        except WebDriverException as e:
+            print('web driver exception: ', e)
 
     consumer.tasks_status[mem_site.site.id] = True
     root.increment_progress()
