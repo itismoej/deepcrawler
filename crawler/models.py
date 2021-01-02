@@ -16,7 +16,7 @@ class Site(models.Model):
 
 
 class Content(models.Model):
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
     content = models.TextField()
 
 
