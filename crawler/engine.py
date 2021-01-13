@@ -71,9 +71,14 @@ def scrape_url(browser, consumer, root: MemorySite, depth, current_depth, url, d
 def run_engine(data, consumer):
     initial_links, depth = data['initial_links'], data['depth']
     consumer.tasks_status = {}
+    sites = [
+        Site.objects.create(crawl=consumer.crawl, url=url, parent=None)
+        for url in initial_links
+    ]
+    data = {'type': 'SET_ID', 'sites': sites}
+    consumer.send(text_data=json.dumps(data))
 
-    for url in initial_links:
-        site = Site.objects.create(crawl=consumer.crawl, url=url, parent=None)
+    for site in sites:
         mem_site = MemorySite(site, consumer.send, steps=depth)
         consumer.tasks_status[site.id] = False
-        scraper(depth, url, consumer, mem_site)
+        scraper(depth, site.url, consumer, mem_site)
