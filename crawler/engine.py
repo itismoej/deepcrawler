@@ -24,12 +24,6 @@ def scraper(depth: int, url: str, consumer, mem_site: MemorySite):
 
     mem_site.send_progress(100)
 
-    if all(consumer.tasks_status.values()):
-        consumer.send(text_data=json.dumps({
-            'id_done': True,
-            'crawl_id': consumer.crawl.id
-        }))
-
 
 def calc_children(link):
     link.child_url = link.get_attribute('href')
@@ -82,3 +76,8 @@ def run_engine(data, consumer):
         mem_site = MemorySite(site, consumer.send, steps=depth)
         consumer.tasks_status[site.id] = False
         scraper(depth, site.url, consumer, mem_site)
+
+    consumer.send(text_data=json.dumps({
+        'is_done': True,
+        'crawl_id': consumer.crawl.id
+    }))
