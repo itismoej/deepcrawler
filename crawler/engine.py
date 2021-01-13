@@ -75,7 +75,7 @@ def run_engine(data, consumer):
         Site.objects.create(crawl=consumer.crawl, url=url, parent=None)
         for url in initial_links
     ]
-    data = {'type': 'SET_ID', 'sites': sites}
+    data = {'type': 'SET_ID', 'sites': [{site.url: site.id} for site in sites]}
     consumer.send(text_data=json.dumps(data))
 
     for site in sites:
