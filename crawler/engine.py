@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from threading import Thread
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -58,13 +59,11 @@ def scrape_url(browser, consumer, root: MemorySite, depth, current_depth, url, d
         except WebDriverException as e:
             print('web driver exception: ', e)
 
-    consumer.tasks_status[mem_site.site.id] = True
     root.increment_progress()
 
 
 def run_engine(data, consumer):
     initial_links, depth = data['initial_links'], data['depth']
-    consumer.tasks_status = {}
     sites = [
         Site.objects.create(crawl=consumer.crawl, url=url, parent=None)
         for url in initial_links
@@ -72,10 +71,15 @@ def run_engine(data, consumer):
     data = {'type': 'SET_ID', 'sites': [{site.url: site.id} for site in sites]}
     consumer.send(text_data=json.dumps(data))
 
+    processes = []
     for site in sites:
         mem_site = MemorySite(site, consumer.send, steps=depth)
-        consumer.tasks_status[site.id] = False
-        scraper(depth, site.url, consumer, mem_site)
+        process = Thread(target=scraper, args=(depth, site.url, consumer, mem_site))
+        process.start()
+        processes.append(process)
+
+    for proc in processes:
+        proc.join()
 
     consumer.send(text_data=json.dumps({
         'is_done': True,

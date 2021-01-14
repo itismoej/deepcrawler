@@ -39,6 +39,12 @@ class MemorySite:
         self.current_step += 1
 
     def increment_progress(self):
-        self.progress += randint(5, 25) / 10 if self.progress < 96 else 0
+        if self.progress < 89:
+            self.progress += randint(5, 25) / 10
+        elif self.progress < 96:
+            self.progress += randint(1, 4) / 10
+        elif self.progress < 99:
+            self.progress += randint(2, 8) / 100
+
         if self.progress != floor(self.progress):
             self.send_progress(floor(self.progress))
