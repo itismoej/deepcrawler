@@ -4,7 +4,7 @@ from pathlib import Path
 from threading import Thread
 
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.chrome.options import Options
 
 from django.conf import settings
@@ -31,9 +31,10 @@ def calc_children(link):
     return link
 
 
-def scrape_url(browser, consumer, root: MemorySite, depth, current_depth, url, directory: Path, mem_site: MemorySite):
+def scrape_url(browser: webdriver.Chrome, consumer, root: MemorySite, depth, current_depth, url, directory: Path, mem_site: MemorySite):
     if url:
         try:
+            browser.set_page_load_timeout(10)
             browser.get(url)
             html_tag = browser.find_element_by_tag_name('html')
             html = html_tag.get_attribute('outerHTML')
@@ -56,6 +57,8 @@ def scrape_url(browser, consumer, root: MemorySite, depth, current_depth, url, d
                         link.child_url, children_directory, child_site
                     )
 
+        except TimeoutException as e:
+            print('site timeout: ', e)
         except WebDriverException as e:
             print('web driver exception: ', e)
 
