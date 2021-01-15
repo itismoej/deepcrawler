@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 
-from config import settings
+from django.conf import settings
 from .models import Site, MemorySite, Content
 
 options = Options()
