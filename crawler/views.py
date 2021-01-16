@@ -8,7 +8,7 @@ from crawler.models import Site, Crawl
 def site(request, site_id):
     site_obj = Site.objects.get(id=site_id)
     return JsonResponse(data={
-        'content': site_obj.content.content,
+        'content': site_obj.content_set.last().content,
         'url': site_obj.url,
     }, status=200)
 
